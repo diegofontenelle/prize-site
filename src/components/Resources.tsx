@@ -3,36 +3,36 @@ import { BadgeDollarSign, FileText, ArrowRightLeft, ShieldCheck } from 'lucide-r
 
 export default function Resources() {
   return (
-    <section className="w-full py-24 flex flex-col items-center overflow-hidden">
-      <div className="max-w-7xl w-full flex flex-col items-start gap-12">
-        <div>
+    <section className="w-full pt-24 flex flex-col items-center overflow-hidden">
+      <div className="max-w-7xl w-full flex flex-col items-center md:items-start gap-12 px-4 xl:px-0">
+        <div className="text-center md:text-left">
           <h2 className="text-xl md:text-2xl font-medium text-gray-800 mb-2">Recursos</h2>
           <h3 className="text-3xl md:text-5xl font-bold text-brand-600">Incentivo digitais feitos em alguns cliques</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full mt-8">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col items-center md:items-start gap-4 text-center md:text-left">
             <div className="w-12 h-12 rounded-full border-2 border-brand-500 flex items-center justify-center text-brand-500">
               <BadgeDollarSign className="w-6 h-6" />
             </div>
             <p className="text-gray-700 font-medium max-w-[200px]">Prêmios com pagamentos instantâneos</p>
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col items-center md:items-start gap-4 text-center md:text-left">
             <div className="w-12 h-12 rounded-full border-2 border-brand-500 flex items-center justify-center text-brand-500">
               <FileText className="w-6 h-6" />
             </div>
             <p className="text-gray-700 font-medium max-w-[200px]">Histórico de todas as transações feitas</p>
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col items-center md:items-start gap-4 text-center md:text-left">
             <div className="w-12 h-12 rounded-full border-2 border-brand-500 flex items-center justify-center text-brand-500">
               <ArrowRightLeft className="w-6 h-6" />
             </div>
             <p className="text-gray-700 font-medium max-w-[200px]">Diversas opções de resgate de créditos</p>
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col items-center md:items-start gap-4 text-center md:text-left">
             <div className="w-12 h-12 rounded-full border-2 border-brand-500 flex items-center justify-center text-brand-500">
               <ShieldCheck className="w-6 h-6" />
             </div>
@@ -56,7 +56,7 @@ export default function Resources() {
           <div className="relative w-full overflow-hidden">
             {/* Using Mockup_Site_Prize2.png which is a desktop monitor. We will crop the top to make it fit nicely if needed, or just display it. */}
             <Image
-              src="/img/Capturas de telas da plataforma/Mockup_Site_Prize2.png"
+              src="/img/resources/bg-front.png"
               alt="Monitor"
               width={1200}
               height={800}
