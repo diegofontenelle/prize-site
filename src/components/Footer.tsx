@@ -34,14 +34,14 @@ export default function Footer() {
         <div className="flex flex-col gap-4">
           <h4 className="text-xl font-semibold mb-2">Nossas redes</h4>
           <div className="flex items-center gap-4">
-            <a href="#linkedin" className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center hover:bg-white/10 transition-colors">
-              <Linkedin className="w-5 h-5 fill-current" />
+            <a href="#linkedin" aria-label="LinkedIn" className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center hover:bg-white/10 transition-colors">
+              <Linkedin className="w-5 h-5 fill-current" aria-hidden="true" />
             </a>
-            <a href="#whatsapp" className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center hover:bg-white/10 transition-colors">
-              <MessageCircle className="w-5 h-5 fill-current" />
+            <a href="#whatsapp" aria-label="WhatsApp" className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center hover:bg-white/10 transition-colors">
+              <MessageCircle className="w-5 h-5 fill-current" aria-hidden="true" />
             </a>
-            <a href="#email" className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center hover:bg-white/10 transition-colors">
-              <Mail className="w-5 h-5" />
+            <a href="#email" aria-label="Email" className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center hover:bg-white/10 transition-colors">
+              <Mail className="w-5 h-5" aria-hidden="true" />
             </a>
           </div>
         </div>
