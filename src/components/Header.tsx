@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Header() {
@@ -11,14 +10,14 @@ export default function Header() {
         </Link>
         <div className="flex items-center gap-4">
           <nav className="hidden md:flex items-center gap-8 text-gray-800 font-medium">
-            <Link href="#produto" className="flex items-center gap-1 hover:text-brand-600 transition-colors text-brand-500">
-              Produto <ChevronDown className="w-4 h-4" />
+            <Link href="/nossa-plataforma" className="hover:text-brand-600 transition-colors text-brand-500">
+              Produto
             </Link>
-            <Link href="#sobre" className="flex items-center gap-1 hover:text-brand-600 transition-colors text-brand-500">
-              Sobre <ChevronDown className="w-4 h-4" />
+            <Link href="/sobre" className="hover:text-brand-600 transition-colors text-brand-500">
+              Sobre
             </Link>
-            <Link href="#ajuda" className="flex items-center gap-1 hover:text-brand-600 transition-colors text-brand-500">
-              Ajuda <ChevronDown className="w-4 h-4" />
+            <Link href="/como-usar" className="hover:text-brand-600 transition-colors text-brand-500">
+              Ajuda
             </Link>
           </nav>
 

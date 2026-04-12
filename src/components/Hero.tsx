@@ -27,7 +27,7 @@ export default function Hero() {
             Transforme campanhas de incentivo em créditos digitais que seus funcionários podem usar como quiserem.
           </p>
           <Link 
-            href="#contratar" 
+            href="/como-usar" 
             className="mt-4 bg-brand-500 hover:bg-brand-600 text-white px-8 py-3 rounded-full font-medium flex items-center gap-2 transition-colors shadow-lg shadow-brand-500/30"
           >
             Contrate nossos serviços <ArrowRight className="w-5 h-5" />

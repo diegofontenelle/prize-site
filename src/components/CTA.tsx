@@ -12,7 +12,7 @@ export default function CTA() {
             Premie de forma inteligente com a <span className="font-bold">Prize</span>
           </h2>
           <Link
-            href="#contratar"
+            href="/como-usar"
             className="bg-white text-brand-600 hover:bg-gray-50 px-8 py-3 rounded-full font-medium flex items-center gap-2 transition-colors shadow-lg mt-2"
           >
             Contrate nossos serviços <ArrowRight className="w-5 h-5" />
