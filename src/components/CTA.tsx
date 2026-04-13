@@ -5,9 +5,12 @@ import { ArrowRight } from 'lucide-react';
 export default function CTA() {
   return (
     <section className="w-full pb-24 flex justify-center md:mt-12">
-      <div className="w-full md:mr-[157px] bg-linear-to-r from-[#1E3A8A] to-[#3a83f8] rounded-none md:rounded-r-3xl overflow-hidden flex flex-col md:flex-row items-center relative shadow-2xl px-6 md:px-0 md:pl-20">
+      <div className="w-full md:mr-[80px] bg-linear-to-r from-[#1E3A8A] to-[#3a83f8] rounded-none md:rounded-r-3xl overflow-hidden flex flex-col md:flex-row items-center relative shadow-2xl px-6 md:px-0 md:pl-20">
 
-        <div className="w-full md:w-1/2 py-16 md:py-24 flex flex-col items-start gap-8 z-10 text-white bg-no-repeat bg-center bg-contain" style={{ backgroundImage: "url('/img/logo-prize-icon.png')" }}>
+        {/* Watermark overlay */}
+        <div className="absolute inset-0 bg-no-repeat bg-center pointer-events-none" style={{ backgroundImage: "url('/img/logo-prize-icon.png')", backgroundSize: '40%', opacity: 0.15 }} />
+
+        <div className="w-full md:w-1/2 py-16 md:py-24 flex flex-col items-start gap-8 z-10 text-white">
           <h2 className="text-4xl md:text-5xl font-medium leading-tight max-w-[400px]">
             Premie de forma inteligente com a <span className="font-bold">Prize</span>
           </h2>
