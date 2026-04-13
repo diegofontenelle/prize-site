@@ -23,7 +23,7 @@ export default function Header() {
 
           <div className="flex items-center gap-4">
             <Link
-              href="#login"
+              href="https://cash-prj.vercel.app/login"
               className="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2.5 rounded-full font-medium transition-colors shadow-sm"
             >
               Acessar conta
