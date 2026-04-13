@@ -23,8 +23,8 @@ export default function Footer() {
 
         <div className="flex flex-col gap-3">
           <h4 className="text-xl font-semibold mb-2">Contatos</h4>
-          <a href="mailto:atendimento@cashin.com.br" className="text-white/90 hover:text-white transition-colors">
-            atendimento@cashin.com.br
+          <a href="mailto:adm@prizebr.com" className="text-white/90 hover:text-white transition-colors">
+            adm@prizebr.com
           </a>
           <a href="tel:+5511975821007" className="text-white/90 hover:text-white transition-colors">
             +55 (11) 97582-1007
