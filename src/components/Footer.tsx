@@ -29,6 +29,9 @@ export default function Footer() {
           <a href="tel:+5511975821007" className="text-white/90 hover:text-white transition-colors">
             +55 (11) 97582-1007
           </a>
+          <a href="/fale-conosco" className="text-white/90 hover:text-white transition-colors underline underline-offset-2">
+            Fale Conosco →
+          </a>
         </div>
 
         <div className="flex flex-col gap-4">

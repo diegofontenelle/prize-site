@@ -19,6 +19,9 @@ export default function Header() {
             <Link href="/como-usar" className="hover:text-brand-600 transition-colors text-brand-500">
               Ajuda
             </Link>
+            <Link href="/fale-conosco" className="hover:text-brand-600 transition-colors text-brand-500">
+              Fale Conosco
+            </Link>
           </nav>
 
           <div className="flex items-center gap-4">
