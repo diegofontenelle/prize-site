@@ -52,7 +52,7 @@ export default function Footer() {
       </div>
 
       <div className="w-full max-w-7xl border-t border-white/20 pt-6 text-center text-sm text-white/70">
-        © 2026 Prize | CNPJ: 30.673.508/0001-11 | Todos direitos reservados
+        © 2026 Prize | CNPJ: 30.115.054/0001-63 | Todos direitos reservados
       </div>
     </footer>
   );
