@@ -1,102 +1,118 @@
-import { test } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import path from 'path';
+import { ROUTES } from '../../src/lib/site';
 
-const VISUAL_DIR = '/Users/diegofontenelle/code/prize-site/tests/results/visual';
+const VISUAL_DIR = 'tests/results/visual';
 
-test.describe('Visual Comparison: home page', () => {
-  test.use({ viewport: { width: 1280, height: 720 } });
+const PAGES = [
+  { path: ROUTES.home, slug: 'home' },
+  { path: ROUTES.comoFunciona, slug: 'como-funciona' },
+  { path: ROUTES.baseLegal, slug: 'base-legal' },
+  { path: ROUTES.seguranca, slug: 'seguranca' },
+  { path: ROUTES.duvidas, slug: 'duvidas' },
+  { path: ROUTES.recebeuPrizes, slug: 'recebeu-prizes' },
+  { path: ROUTES.faleComAGente, slug: 'fale-com-a-gente' },
+] as const;
 
-  // TC-VISUAL-001: Full page desktop screenshot at 1280×720
-  test('TC-VISUAL-001: full page desktop screenshot 1280x720', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-    await page.screenshot({
-      path: path.join(VISUAL_DIR, 'desktop-full-page.png'),
-      fullPage: true,
+const DESKTOP = { width: 1280, height: 720 };
+const MOBILE = { width: 390, height: 844 };
+
+/**
+ * Abre a página no estado final das animações: com movimento reduzido o site
+ * desliga as animações (globals.css) e a contagem dos números já mostra o valor final.
+ */
+async function openStill(page: Page, route: string) {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto(route, { waitUntil: 'networkidle' });
+  await page.evaluate(() => document.fonts.ready);
+  // Esconde o indicador do dev server (next dev), que não faz parte da página
+  await page.addStyleTag({ content: 'nextjs-portal{display:none !important}' });
+}
+
+/** Largura do documento vs. largura da janela (sem rolagem horizontal). */
+function overflow(page: Page) {
+  return page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    innerWidth: window.innerWidth,
+  }));
+}
+
+test.describe('Visual: desktop 1280x720', () => {
+  test.use({ viewport: DESKTOP });
+
+  // TC-VISUAL-001..007: página inteira no desktop
+  for (const [i, p] of PAGES.entries()) {
+    const id = String(i + 1).padStart(3, '0');
+    test(`TC-VISUAL-${id}: desktop full page ${p.path}`, async ({ page }, testInfo) => {
+      await openStill(page, p.path);
+      await expect(page.locator('main')).toBeVisible();
+
+      const size = await overflow(page);
+      expect(size.scrollWidth, `rolagem horizontal em ${p.path}`).toBeLessThanOrEqual(size.innerWidth);
+
+      await page.screenshot({
+        path: path.join(VISUAL_DIR, testInfo.project.name, `desktop-${p.slug}.png`),
+        fullPage: true,
+      });
     });
-  });
+  }
+});
 
-  // TC-VISUAL-002: Header screenshot
-  test('TC-VISUAL-002: header screenshot', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-    const header = page.locator('header').first();
-    await header.screenshot({
-      path: path.join(VISUAL_DIR, 'desktop-header.png'),
-    });
-  });
+test.describe('Visual: mobile 390x844', () => {
+  test.use({ viewport: MOBILE });
 
-  // TC-VISUAL-003: Hero section screenshot
-  test('TC-VISUAL-003: hero section screenshot', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.waitForTimeout(500);
-    const hero = page.locator('section').first();
-    await hero.screenshot({
-      path: path.join(VISUAL_DIR, 'desktop-hero.png'),
-    });
-  });
+  // TC-VISUAL-008..014: página inteira no celular
+  for (const [i, p] of PAGES.entries()) {
+    const id = String(i + 8).padStart(3, '0');
+    test(`TC-VISUAL-${id}: mobile full page ${p.path}`, async ({ page }, testInfo) => {
+      await openStill(page, p.path);
+      await expect(page.locator('main')).toBeVisible();
 
-  // TC-VISUAL-004: Solutions blue banner screenshot
-  test('TC-VISUAL-004: solutions blue banner screenshot', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-    // Locate the Solutions section — look for a section containing "Soluções" or "soluções" text
-    const solutionsSection = page
-      .locator('section')
-      .filter({ hasText: /soluções/i })
-      .first();
-    await solutionsSection.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(500);
-    await solutionsSection.screenshot({
-      path: path.join(VISUAL_DIR, 'desktop-solutions.png'),
+      await page.screenshot({
+        path: path.join(VISUAL_DIR, testInfo.project.name, `mobile-${p.slug}.png`),
+        fullPage: true,
+      });
     });
-  });
+  }
 
-  // TC-VISUAL-005: Resources section screenshot
-  test('TC-VISUAL-005: resources section screenshot', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-    const resourcesSection = page
-      .locator('section')
-      .filter({ hasText: /recursos/i })
-      .first();
-    await resourcesSection.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(500);
-    await resourcesSection.screenshot({
-      path: path.join(VISUAL_DIR, 'desktop-resources.png'),
-    });
-  });
+  // TC-VISUAL-015..021: sem rolagem horizontal a 390px, com as animações rodando de verdade
+  for (const [i, p] of PAGES.entries()) {
+    const id = String(i + 15).padStart(3, '0');
+    test(`TC-VISUAL-${id}: no horizontal overflow at 390px ${p.path}`, async ({ page }) => {
+      await page.goto(p.path, { waitUntil: 'networkidle' });
 
-  // TC-VISUAL-006: CTA blue gradient section screenshot
-  test('TC-VISUAL-006: CTA blue gradient section screenshot', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-    // CTA section uniquely contains "Premie de forma inteligente" (not the Hero's "Bonifique")
-    const ctaSection = page
-      .locator('section')
-      .filter({ hasText: /Premie de forma inteligente/i })
-      .first();
-    await ctaSection.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(500);
-    await ctaSection.screenshot({
-      path: path.join(VISUAL_DIR, 'desktop-cta.png'),
-    });
-  });
+      // Confere no topo e depois de rolar até o fim (ilustrações e balões flutuantes já em cena)
+      let size = await overflow(page);
+      expect(size.scrollWidth, `rolagem horizontal em ${p.path} (topo)`).toBeLessThanOrEqual(size.innerWidth);
 
-  // TC-VISUAL-007: Footer screenshot
-  test('TC-VISUAL-007: footer screenshot', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-    const footer = page.locator('footer').first();
-    await footer.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(500);
-    await footer.screenshot({
-      path: path.join(VISUAL_DIR, 'desktop-footer.png'),
-    });
-  });
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+      await page.waitForTimeout(500);
+      size = await overflow(page);
+      expect(size.scrollWidth, `rolagem horizontal em ${p.path} (fim)`).toBeLessThanOrEqual(size.innerWidth);
 
-  // TC-VISUAL-008: Mobile full page 375×667
-  test('TC-VISUAL-008: mobile full page screenshot 375x667', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('/', { waitUntil: 'networkidle' });
-    await page.screenshot({
-      path: path.join(VISUAL_DIR, 'mobile-full-page.png'),
-      fullPage: true,
+      // A página também não rola na horizontal
+      const scrolledX = await page.evaluate(() => {
+        window.scrollTo(200, window.scrollY);
+        return window.scrollX;
+      });
+      expect(scrolledX).toBe(0);
     });
+  }
+
+  // TC-VISUAL-022: menu do celular aberto cabe na tela
+  test('TC-VISUAL-022: mobile menu fits the viewport', async ({ page }, testInfo) => {
+    await openStill(page, ROUTES.home);
+    await page.locator('header details.mnav summary').click();
+
+    const panel = page.locator('header details.mnav > div');
+    await expect(panel).toBeVisible();
+    const box = await panel.boundingBox();
+    expect(box!.x).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(MOBILE.width);
+
+    const size = await overflow(page);
+    expect(size.scrollWidth).toBeLessThanOrEqual(size.innerWidth);
+
+    await page.screenshot({ path: path.join(VISUAL_DIR, testInfo.project.name, 'mobile-menu-open.png') });
   });
 });

@@ -1,0 +1,87 @@
+/* Página inicial: regras do protótipo que não estão em globals.css, isoladas em .pg-home. */
+@media (min-width: 761px) and (max-width: 1135px){
+.pg-home .hero-photo{height:auto !important;aspect-ratio:4/3}
+.pg-home .bub-notif{left:16px !important;top:20px !important}
+.pg-home .bub-pix{right:16px !important;bottom:20px !important}
+}
+@media (max-width: 760px){
+.pg-home .hero-visual{margin-top:52px}
+.pg-home .hero-photo{height:360px !important}
+.pg-home .bub-notif{left:12px !important;top:-72px !important}
+.pg-home .bub-pix{right:12px !important;bottom:-36px !important}
+.pg-home .faq > p{padding-right:0 !important}
+.pg-home .hero-mark{width:560px !important;height:560px !important;right:-220px !important;top:auto !important;bottom:-140px !important;margin-top:0 !important}
+}
+
+/* Ilustração do extrato: ic* = desktop, icm* = celular. Toca uma vez (data-play). */
+@keyframes home-ic1{0%,4.76%{opacity:0;transform:scale(0.85)}11.90%{opacity:1;transform:scale(1.06)}15.48%,100%{opacity:1;transform:scale(1)}}
+.pg-home .ic1{animation:home-ic1 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes home-ic2{0%,14.29%{opacity:0;transform:scale(0.6)}21.43%{opacity:1;transform:scale(1.06)}25.00%,100%{opacity:1;transform:scale(1)}}
+.pg-home .ic2{animation:home-ic2 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes home-ic3{0%,19.05%{opacity:0;transform:translate(0px,0px)}26.19%,100%{opacity:1;transform:translate(0,0)}}
+.pg-home .ic3{animation:home-ic3 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes home-ic4{0%,23.81%{opacity:0;transform:scale(0.6)}30.95%{opacity:1;transform:scale(1.06)}34.52%,100%{opacity:1;transform:scale(1)}}
+.pg-home .ic4{animation:home-ic4 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes home-ic5{0%,28.57%{opacity:0;transform:translate(0px,0px)}35.71%,100%{opacity:1;transform:translate(0,0)}}
+.pg-home .ic5{animation:home-ic5 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes home-ic6{0%,29.52%{opacity:0;transform:translate(98px,182px)}30.95%{opacity:1;transform:translate(98px,182px)}38.10%{opacity:1;transform:translate(170px,182px)}40.95%,100%{opacity:0;transform:translate(170px,182px)}}
+.pg-home .ic6{animation:home-ic6 4.2s linear 1 both;opacity:0}
+@keyframes home-ic7{0%,45.24%{opacity:0;transform:scale(0.6)}52.38%{opacity:1;transform:scale(1.06)}55.95%,100%{opacity:1;transform:scale(1)}}
+.pg-home .ic7{animation:home-ic7 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes home-ic8{0%,50.00%{opacity:0;transform:translate(0px,0px)}57.14%,100%{opacity:1;transform:translate(0,0)}}
+.pg-home .ic8{animation:home-ic8 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes home-ic9{0%,36.90%{opacity:0;transform:translate(-14px,0px)}45.24%,100%{opacity:1;transform:translate(0,0)}}
+.pg-home .ic9{animation:home-ic9 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes home-ic10{0%,58.33%{opacity:0;transform:translate(-14px,0px)}66.67%,100%{opacity:1;transform:translate(0,0)}}
+.pg-home .ic10{animation:home-ic10 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes home-ic11{0%,66.67%{opacity:0;transform:translate(-14px,0px)}75.00%,100%{opacity:1;transform:translate(0,0)}}
+.pg-home .ic11{animation:home-ic11 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes home-ic12{0%,78.57%{opacity:0;transform:scale(0.3)}85.71%{opacity:1;transform:scale(1.06)}89.29%,100%{opacity:1;transform:scale(1)}}
+.pg-home .ic12{animation:home-ic12 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes home-icm1{0%,4.76%{opacity:0;transform:scale(0.85)}11.90%{opacity:1;transform:scale(1.06)}15.48%,100%{opacity:1;transform:scale(1)}}
+.pg-home .icm1{animation:home-icm1 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes home-icm2{0%,14.29%{opacity:0;transform:scale(0.6)}21.43%{opacity:1;transform:scale(1.06)}25.00%,100%{opacity:1;transform:scale(1)}}
+.pg-home .icm2{animation:home-icm2 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes home-icm3{0%,19.05%{opacity:0;transform:translate(0px,0px)}26.19%,100%{opacity:1;transform:translate(0,0)}}
+.pg-home .icm3{animation:home-icm3 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes home-icm4{0%,23.81%{opacity:0;transform:scale(0.6)}30.95%{opacity:1;transform:scale(1.06)}34.52%,100%{opacity:1;transform:scale(1)}}
+.pg-home .icm4{animation:home-icm4 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes home-icm5{0%,28.57%{opacity:0;transform:translate(0px,0px)}35.71%,100%{opacity:1;transform:translate(0,0)}}
+.pg-home .icm5{animation:home-icm5 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes home-icm6{0%,29.52%{opacity:0;transform:translate(98px,182px)}30.95%{opacity:1;transform:translate(98px,182px)}38.10%{opacity:1;transform:translate(170px,182px)}40.95%,100%{opacity:0;transform:translate(170px,182px)}}
+.pg-home .icm6{animation:home-icm6 4.2s linear 1 both;opacity:0}
+@keyframes home-icm7{0%,45.24%{opacity:0;transform:scale(0.6)}52.38%{opacity:1;transform:scale(1.06)}55.95%,100%{opacity:1;transform:scale(1)}}
+.pg-home .icm7{animation:home-icm7 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes home-icm8{0%,50.00%{opacity:0;transform:translate(0px,0px)}57.14%,100%{opacity:1;transform:translate(0,0)}}
+.pg-home .icm8{animation:home-icm8 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes home-icm9{0%,36.90%{opacity:0;transform:translate(-14px,0px)}45.24%,100%{opacity:1;transform:translate(0,0)}}
+.pg-home .icm9{animation:home-icm9 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes home-icm10{0%,58.33%{opacity:0;transform:translate(-14px,0px)}66.67%,100%{opacity:1;transform:translate(0,0)}}
+.pg-home .icm10{animation:home-icm10 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes home-icm11{0%,66.67%{opacity:0;transform:translate(-14px,0px)}75.00%,100%{opacity:1;transform:translate(0,0)}}
+.pg-home .icm11{animation:home-icm11 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes home-icm12{0%,78.57%{opacity:0;transform:scale(0.3)}85.71%{opacity:1;transform:scale(1.06)}89.29%,100%{opacity:1;transform:scale(1)}}
+.pg-home .icm12{animation:home-icm12 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+
+/* Números: contagem e animações disparadas pela classe st-run (ver NumbersSection). */
+.pg-home .ct{font-variant-numeric:tabular-nums}
+@keyframes home-stpop{0%{opacity:0;transform:scale(.6)}70%{opacity:1;transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+.pg-home .st-run .st-pop{animation:home-stpop .6s cubic-bezier(.2,.7,.2,1) both}
+@keyframes home-stline{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.pg-home .st-line{transform-origin:left center}
+.pg-home .st-run .st-line{animation:home-stline 2.6s linear both}
+.pg-home .st-hist{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr);align-items:end;gap:36px 0}
+.pg-home .st-hist > h2{padding-right:40px}
+.pg-home .st-hist .st-item + .st-item{border-left:1px solid #DBEAFE;padding-left:40px}
+@media (min-width: 1081px){.pg-home .st-hist-panel{min-height:483px;justify-content:center}}
+@media (max-width: 760px){.pg-home .st-hist-panel{min-height:508px;justify-content:center}}
+@media (max-width: 1080px){
+.pg-home .st-hist{grid-template-columns:1fr 1fr}
+.pg-home .st-hist > h2{grid-column:1 / -1;padding-right:0}
+}
+@media (max-width: 760px){
+.pg-home .st-hist{grid-template-columns:1fr;gap:24px}
+.pg-home .st-hist .st-item{gap:8px !important}
+.pg-home .st-hist .st-item + .st-item{border-left:0;padding-left:0;border-top:1px solid #DBEAFE;padding-top:24px}
+.pg-home .st-ico,.pg-home .st-line{display:none !important}
+}

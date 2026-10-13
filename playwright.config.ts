@@ -27,7 +27,7 @@ export default defineConfig({
     },
     {
       name: 'mobile-chrome',
-      use: { ...devices['Iphone 17'] },
+      use: { ...devices['iPhone 15 Pro'], browserName: 'chromium' },
     },
   ],
   outputDir: 'tests/results',

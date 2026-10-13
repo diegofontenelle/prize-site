@@ -1,0 +1,27 @@
+/* Página "Segurança": só o que não está em app/globals.css, escopado em .pg-seguranca. */
+
+/* Ilustração da chave Pix e do código do autenticador (toca uma vez, ver [data-play]) */
+@keyframes seguranca-ia1{0%,4.76%{opacity:0;transform:scale(0.6)}11.90%{opacity:1;transform:scale(1.06)}15.48%,100%{opacity:1;transform:scale(1)}}
+.pg-seguranca .ia1{animation:seguranca-ia1 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes seguranca-ia2{0%,10.71%{opacity:0;transform:translate(24px,0px)}20.24%,100%{opacity:1;transform:translate(0,0)}}
+.pg-seguranca .ia2{animation:seguranca-ia2 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes seguranca-ia3{0%,19.05%{opacity:0;transform:translate(0px,0px)}26.19%,100%{opacity:1;transform:translate(0,0)}}
+.pg-seguranca .ia3{animation:seguranca-ia3 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes seguranca-ia4{0%,23.81%{clip-path:inset(0 100% 0 0);opacity:1;animation-timing-function:steps(14,end)}45.24%,100%{clip-path:inset(0 0 0 0);opacity:1}}
+.pg-seguranca .ia4{animation:seguranca-ia4 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes seguranca-ia5{0%,46.43%{opacity:0;transform:scale(0.3)}53.57%{opacity:1;transform:scale(1.06)}57.14%,100%{opacity:1;transform:scale(1)}}
+.pg-seguranca .ia5{animation:seguranca-ia5 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes seguranca-ia6{0%,53.57%{transform:translate(0,-5px)}59.52%,100%{transform:translate(0,0)}}
+.pg-seguranca .ia6{animation:seguranca-ia6 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes seguranca-ia7{0%,33.33%{opacity:0;transform:scale(0.6)}40.48%{opacity:1;transform:scale(1.06)}44.05%,100%{opacity:1;transform:scale(1)}}
+.pg-seguranca .ia7{animation:seguranca-ia7 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes seguranca-ia8{0%,39.29%{opacity:0;transform:translate(-24px,0px)}48.81%,100%{opacity:1;transform:translate(0,0)}}
+.pg-seguranca .ia8{animation:seguranca-ia8 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes seguranca-ia9{0%,47.62%{opacity:0;transform:translate(0px,0px)}54.76%,100%{opacity:1;transform:translate(0,0)}}
+.pg-seguranca .ia9{animation:seguranca-ia9 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes seguranca-ia10{0%,52.38%{clip-path:inset(0 100% 0 0);opacity:1;animation-timing-function:steps(7,end)}73.81%,100%{clip-path:inset(0 0 0 0);opacity:1}}
+.pg-seguranca .ia10{animation:seguranca-ia10 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes seguranca-ia11{0%,75.00%{opacity:0;transform:scale(0.3)}82.14%{opacity:1;transform:scale(1.06)}85.71%,100%{opacity:1;transform:scale(1)}}
+.pg-seguranca .ia11{animation:seguranca-ia11 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes seguranca-ia12{0%,82.14%{transform:translate(0,-5px)}88.10%,100%{transform:translate(0,0)}}
+.pg-seguranca .ia12{animation:seguranca-ia12 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}

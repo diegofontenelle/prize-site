@@ -1,0 +1,20 @@
+/* Página "Recebeu Prizes?" — regras do protótipo que não estão em globals.css, isoladas em .pg-recebeu-prizes. */
+.pg-recebeu-prizes :focus-visible{outline-offset:2px}
+.pg-recebeu-prizes .btn-white:hover{background:#EEF4FF !important;color:#1D4ED8 !important}
+.pg-recebeu-prizes .lift{transition:transform .25s ease,box-shadow .25s ease}
+.pg-recebeu-prizes .lift:hover{transform:translateY(-4px);box-shadow:0 22px 44px rgba(14,26,51,0.10)}
+
+@keyframes recebeu-prizes-floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes recebeu-prizes-toast{0%{opacity:0;transform:translateY(16px) scale(.94)}100%{opacity:1;transform:none}}
+@keyframes recebeu-prizes-typing{0%,100%{opacity:1}50%{opacity:.25}}
+
+.pg-recebeu-prizes .d1{animation-delay:.1s}.pg-recebeu-prizes .d2{animation-delay:.2s}.pg-recebeu-prizes .d3{animation-delay:.3s}.pg-recebeu-prizes .d4{animation-delay:.4s}
+.pg-recebeu-prizes .spin-slow{animation:spin 120s linear infinite}
+.pg-recebeu-prizes .toast-in{animation:recebeu-prizes-toast .7s cubic-bezier(.2,.7,.2,1) 1.1s both,recebeu-prizes-floaty 6s ease-in-out 1.8s infinite}
+.pg-recebeu-prizes .caret{animation:recebeu-prizes-typing 1s steps(1) infinite}
+
+@media (max-width: 760px){
+.pg-recebeu-prizes .hero-vis{min-height:0 !important;display:flex;flex-direction:column;align-items:center}
+.pg-recebeu-prizes .phone-abs{position:relative !important;right:auto !important;top:auto !important;left:auto !important;margin-left:0 !important}
+.pg-recebeu-prizes .toast-m{position:relative !important;left:auto !important;top:auto !important;right:auto !important;margin-top:-44px !important;margin-left:0 !important}
+}

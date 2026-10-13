@@ -1,0 +1,17 @@
+/* Página "Fale com a gente": regras do protótipo que não estão em globals.css. */
+/* O rodapé do layout tem cantos superiores arredondados (40px): o fundo cinza do <main> se estende por trás
+   deles, sem mudar a posição do rodapé, para não aparecerem cantos brancos sobre a página cinza. */
+.pg-fale-com-a-gente{margin-bottom:-40px;padding-bottom:40px}
+.pg-fale-com-a-gente fieldset{margin:0}
+.pg-fale-com-a-gente :focus-visible{outline:3px solid #3B82F6;outline-offset:2px}
+.pg-fale-com-a-gente input,.pg-fale-com-a-gente select,.pg-fale-com-a-gente textarea,.pg-fale-com-a-gente button{font:inherit;color:inherit}
+.pg-fale-com-a-gente input[type=text],.pg-fale-com-a-gente input[type=email],.pg-fale-com-a-gente input[type=tel],.pg-fale-com-a-gente select,.pg-fale-com-a-gente textarea{outline-offset:0}
+.pg-fale-com-a-gente input[type=text]:focus,.pg-fale-com-a-gente input[type=email]:focus,.pg-fale-com-a-gente input[type=tel]:focus,.pg-fale-com-a-gente select:focus,.pg-fale-com-a-gente textarea:focus{border-color:#2563EB !important;box-shadow:0 0 0 3px #BFD4FE}
+.pg-fale-com-a-gente input[type=radio],.pg-fale-com-a-gente input[type=checkbox]{accent-color:#2563EB;width:18px;height:18px;margin:0;flex-shrink:0}
+.pg-fale-com-a-gente select{appearance:none;-webkit-appearance:none}
+.pg-fale-com-a-gente button{cursor:pointer}
+.pg-fale-com-a-gente .opt:hover{border-color:#2563EB !important;background:#F5F8FF !important}
+
+@keyframes fale-com-a-gente-pop{0%{opacity:0;transform:scale(.6)}70%{opacity:1;transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+.pg-fale-com-a-gente .d1{animation-delay:.1s}.pg-fale-com-a-gente .d2{animation-delay:.2s}.pg-fale-com-a-gente .d3{animation-delay:.3s}
+.pg-fale-com-a-gente .pop-in{animation:fale-com-a-gente-pop .6s cubic-bezier(.2,.7,.2,1) both}
