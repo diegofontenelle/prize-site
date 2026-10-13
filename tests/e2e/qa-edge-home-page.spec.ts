@@ -1,210 +1,273 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import path from 'path';
+import { LOGIN_URL, MAIN_NAV, ROUTES } from '../../src/lib/site';
 
 const SCREENSHOTS_DIR = 'tests/results/edge';
+const ALL_ROUTES = Object.values(ROUTES);
 
-test.describe('Unhappy Path & Edge Cases: home page', () => {
+/** Abre o formulário de contato pronto para uso (componente cliente hidratado). */
+async function openContactForm(page: Page) {
+  await page.goto(ROUTES.faleComAGente, { waitUntil: 'networkidle' });
+  const form = page.locator('form');
+  await expect(form).toBeVisible();
+  return form;
+}
 
-  // TC-EDGE-001: No uncaught JS errors
-  test('TC-EDGE-001: no uncaught JS errors on page load', async ({ page }) => {
-    const pageErrors: Error[] = [];
-
-    // Attach listener BEFORE navigation
-    page.on('pageerror', (err) => {
-      pageErrors.push(err);
+test.describe('Unhappy Path & Edge Cases: site', () => {
+  // TC-EDGE-001: nenhuma página gera erro de JS (nem aviso de hidratação no console)
+  test('TC-EDGE-001: no JS errors on any route', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (err) => errors.push(`pageerror: ${err.message}`));
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') errors.push(`console: ${msg.text()}`);
     });
 
-    await page.goto('/', { waitUntil: 'networkidle' });
+    for (const route of ALL_ROUTES) {
+      await page.goto(route, { waitUntil: 'networkidle' });
+      // Rola até o fim para disparar as ilustrações e a contagem dos números
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+      await page.waitForTimeout(300);
+    }
 
-    await page.screenshot({
-      path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-001-no-js-errors.png'),
-      fullPage: true,
-    });
-
-    expect(
-      pageErrors,
-      `Expected zero uncaught JS errors but got ${pageErrors.length}: ${pageErrors.map((e) => e.message).join('; ')}`
-    ).toHaveLength(0);
+    await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-001-no-js-errors.png') });
+    expect(errors, errors.join('\n')).toHaveLength(0);
   });
 
-  // TC-EDGE-002: Nav hidden on mobile
-  test('TC-EDGE-002: nav links hidden on mobile viewport', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('/', { waitUntil: 'networkidle' });
+  test.describe('mobile menu (390px)', () => {
+    test.use({ viewport: { width: 390, height: 844 } });
 
-    // The nav has class "hidden md:flex" — it should not be visible at 375px
-    const mobileNav = page.locator('nav.hidden');
+    // TC-EDGE-002: menu do celular abre, lista as páginas e navega
+    test('TC-EDGE-002: mobile menu opens and navigates', async ({ page }) => {
+      await page.goto(ROUTES.home, { waitUntil: 'networkidle' });
 
-    await page.screenshot({
-      path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-002-mobile-nav-hidden.png'),
-      fullPage: false,
+      // Menu de desktop e CTA do header somem; fica o botão "Abrir menu"
+      await expect(page.getByRole('navigation', { name: 'Principal' })).toBeHidden();
+      await expect(page.locator('header .hdr-cta')).toBeHidden();
+      await expect(page.locator('header').getByRole('link', { name: 'Entrar', exact: true })).toHaveAttribute('href', LOGIN_URL);
+
+      const menu = page.locator('header details.mnav');
+      const toggle = menu.locator('summary');
+      await expect(toggle).toBeVisible();
+      await expect(toggle).toHaveAttribute('aria-label', 'Abrir menu');
+
+      await toggle.click();
+      await expect(menu).toHaveAttribute('open', '');
+      for (const item of MAIN_NAV) {
+        await expect(menu.getByRole('link', { name: item.label, exact: true })).toBeVisible();
+      }
+      await expect(menu.getByRole('link', { name: 'Fale com a gente' })).toBeVisible();
+      await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-002-mobile-menu-open.png') });
+
+      // Navega e o menu fecha sozinho
+      await menu.getByRole('link', { name: 'Segurança', exact: true }).click();
+      await expect(page).toHaveURL(ROUTES.seguranca);
+      await expect(menu).not.toHaveAttribute('open', '');
+      await expect(page.locator('main h1')).toHaveText('Seguro para quem paga e para quem recebe.');
+
+      // O item da página atual fica marcado, e o CTA do menu leva ao formulário
+      await toggle.click();
+      await expect(menu.getByRole('link', { name: 'Segurança', exact: true })).toHaveAttribute('aria-current', 'page');
+      await menu.getByRole('link', { name: 'Fale com a gente' }).click();
+      await expect(page).toHaveURL(ROUTES.faleComAGente);
+      await expect(menu).not.toHaveAttribute('open', '');
+
+      await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-002-mobile-menu-navigated.png') });
     });
-
-    await expect(mobileNav).not.toBeVisible();
   });
 
-  // TC-EDGE-003: Hero images load (naturalWidth > 0)
-  test('TC-EDGE-003: hero images all load with naturalWidth > 0', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
+  // TC-EDGE-003: perguntas frequentes abrem e fecham (<details> nativo)
+  test('TC-EDGE-003: FAQ details toggle', async ({ page }) => {
+    await page.goto(ROUTES.duvidas, { waitUntil: 'networkidle' });
 
-    // Evaluate naturalWidth of every <img> inside the hero <section>
-    const brokenImages = await page.evaluate(() => {
-      const hero = document.querySelector('section');
-      if (!hero) return ['hero section not found'];
+    const first = page.locator('details.faq', { has: page.getByText('Como a minha empresa começa?') });
+    const second = page.locator('details.faq', { has: page.getByText('Como coloco saldo na Prize?') });
 
-      const imgs = Array.from(hero.querySelectorAll('img'));
-      return imgs
-        .filter((img) => img.naturalWidth === 0)
-        .map((img) => img.src || img.getAttribute('src') || 'unknown src');
-    });
+    // A primeira de cada grupo já vem aberta
+    await expect(first).toHaveAttribute('open', '');
+    await expect(first.locator('p')).toBeVisible();
+    await expect(second).not.toHaveAttribute('open', '');
+    await expect(second.locator('p')).toBeHidden();
 
-    await page.screenshot({
-      path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-003-hero-images-loaded.png'),
-      fullPage: false,
-    });
+    await first.locator('summary').click();
+    await expect(first).not.toHaveAttribute('open', '');
+    await expect(first.locator('p')).toBeHidden();
 
-    expect(
-      brokenImages,
-      `These hero images have naturalWidth === 0 (broken): ${brokenImages.join(', ')}`
-    ).toHaveLength(0);
+    await second.locator('summary').click();
+    await expect(second).toHaveAttribute('open', '');
+    await expect(second.locator('p')).toBeVisible();
+
+    // Teclado: Enter no summary também alterna
+    await second.locator('summary').focus();
+    await page.keyboard.press('Enter');
+    await expect(second).not.toHaveAttribute('open', '');
+
+    // Atalho "Para quem recebe" leva ao grupo
+    await page.getByRole('navigation', { name: 'Grupos de perguntas' }).getByRole('link', { name: 'Para quem recebe' }).click();
+    await expect(page).toHaveURL(/#quem-recebe$/);
+    await expect(page.locator('main').getByRole('heading', { name: 'Para quem recebe', level: 2 })).toBeInViewport();
+
+    await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-003-faq-toggle.png') });
   });
 
-  // TC-EDGE-004: Resources bg-front.png image loads
-  test('TC-EDGE-004: resources bg-front.png image loads with naturalWidth > 0', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
+  // TC-EDGE-004: enviar o formulário vazio mostra os erros de cada campo
+  test('TC-EDGE-004: contact form shows errors on empty submit', async ({ page }) => {
+    const form = await openContactForm(page);
 
-    const isBroken = await page.evaluate(() => {
-      const img = document.querySelector('img[src*="bg-front.png"]') as HTMLImageElement | null;
-      if (!img) return 'img element not found in DOM';
-      if (img.naturalWidth === 0) return `naturalWidth is 0 for src=${img.src}`;
-      return null;
-    });
+    await form.getByRole('button', { name: 'Enviar' }).click();
 
-    await page.screenshot({
-      path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-004-resources-bgfront-loaded.png'),
-      fullPage: false,
-    });
+    await expect(form.getByRole('alert')).toHaveText('Revise os campos marcados para enviar.');
+    const messages = [
+      'Informe o seu nome.',
+      'Informe um e-mail válido, como nome@empresa.com.br.',
+      'Informe o celular com DDD.',
+      'Informe o nome da empresa.',
+      'Informe o seu cargo.',
+      'Escolha uma opção.',
+      'Para enviar, é preciso concordar com a Política de Privacidade.',
+    ];
+    for (const message of messages) await expect(form.getByText(message)).toBeVisible();
+    await expect(form.getByText('Escolha uma faixa.')).toHaveCount(2);
 
-    expect(isBroken).toBeNull();
+    // O texto do rótulo inclui o "*" de obrigatório; /^Empresa/ não pega "Empregados da empresa".
+    for (const label of [/^Nome completo/, /^E-mail de trabalho/, /^Celular com DDD/, /^Empresa/, /^Cargo/]) {
+      await expect(form.getByLabel(label)).toHaveAttribute('aria-invalid', 'true');
+    }
+    // Campo opcional não é marcado
+    await expect(form.getByLabel('CNPJ')).not.toHaveAttribute('aria-invalid', 'true');
+
+    await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-004-form-errors.png'), fullPage: true });
   });
 
-  // TC-EDGE-005: Footer email href
-  test('TC-EDGE-005: footer email link has correct mailto href', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
+  // TC-EDGE-005: e-mail que passa no navegador mas não na regra do site ("a@b") continua com erro
+  test('TC-EDGE-005: contact form rejects an e-mail without domain', async ({ page }) => {
+    const form = await openContactForm(page);
 
-    const emailLink = page.locator('footer a[href^="mailto:"]');
+    await form.getByLabel('Nome completo').fill('Mariana Costa');
+    await form.getByLabel('E-mail de trabalho').fill('a@b');
+    await form.getByLabel('Celular com DDD').fill('(11) 91234-5678');
+    await form.getByLabel(/^Empresa/).fill('Distribuidora Aurora');
+    await form.getByLabel('Cargo').fill('Gerente de RH');
+    await form.getByLabel('Quantas pessoas vai premiar?').selectOption('De 51 a 200');
+    await form.getByLabel('Quanto vai premiar por ano?').selectOption('Ainda não sei');
+    await form.getByLabel('Os dois').check();
+    await form.getByRole('checkbox', { name: /Li e concordo/ }).check();
+    await form.getByRole('button', { name: 'Enviar' }).click();
 
-    await page.screenshot({
-      path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-005-footer-email-href.png'),
-      fullPage: false,
-    });
+    await expect(form.getByRole('alert')).toBeVisible();
+    await expect(form.getByText('Informe um e-mail válido, como nome@empresa.com.br.')).toBeVisible();
+    await expect(form.getByLabel('E-mail de trabalho')).toHaveAttribute('aria-invalid', 'true');
+    await expect(form.getByLabel('Nome completo')).toHaveAttribute('aria-invalid', 'false');
+    await expect(page.locator('main').getByRole('status')).toHaveCount(0);
 
-    const href = await emailLink.getAttribute('href');
-    expect(href).toBe('mailto:atendimento@cashin.com.br');
+    await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-005-form-bad-email.png') });
   });
 
-  // TC-EDGE-006: Footer phone href
-  test('TC-EDGE-006: footer phone link has correct tel href', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
+  // TC-EDGE-006: envio válido mostra a confirmação; "Enviar outro contato" volta ao formulário
+  test('TC-EDGE-006: contact form shows the sent state on valid submit', async ({ page }) => {
+    const form = await openContactForm(page);
 
-    const phoneLink = page.locator('footer a[href^="tel:"]');
+    await form.getByLabel('Nome completo').fill('Mariana Costa');
+    await form.getByLabel('E-mail de trabalho').fill('mariana.costa@aurora.com.br');
+    await form.getByLabel('Celular com DDD').fill('(11) 91234-5678');
+    await form.getByLabel(/^Empresa/).fill('Distribuidora Aurora');
+    await form.getByLabel('Cargo').fill('Gerente de RH');
+    await form.getByLabel('Quantas pessoas vai premiar?').selectOption('De 51 a 200');
+    await form.getByLabel('Quanto vai premiar por ano?').selectOption('De R$ 100 mil a R$ 300 mil');
+    await form.getByLabel('Empregados da empresa').check();
+    await form.getByRole('checkbox', { name: /Li e concordo/ }).check();
+    await form.getByRole('button', { name: 'Enviar' }).click();
 
-    await page.screenshot({
-      path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-006-footer-phone-href.png'),
-      fullPage: false,
-    });
+    const status = page.locator('main').getByRole('status');
+    await expect(status).toBeVisible();
+    await expect(status.getByRole('heading', { name: 'Recebemos o seu contato' })).toBeVisible();
+    await expect(status).toContainText('Obrigado, Mariana. A gente responde em até 24 horas no e-mail mariana.costa@aurora.com.br.');
+    // O botão Enviar some com o formulário: a confirmação entra na tela e recebe o foco
+    await expect(status.getByRole('heading', { name: 'Recebemos o seu contato' })).toBeFocused();
+    await expect(status).toBeInViewport();
+    await expect(page.locator('form')).toHaveCount(0);
+    await expect(status.getByRole('link', { name: 'Voltar para o início' })).toHaveAttribute('href', ROUTES.home);
 
-    const href = await phoneLink.getAttribute('href');
-    expect(href).toBe('tel:+5511975821007');
+    await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-006-form-sent.png') });
+
+    await status.getByRole('button', { name: 'Enviar outro contato' }).click();
+    await expect(page.locator('form')).toBeVisible();
+    await expect(page.locator('form').getByRole('alert')).toHaveCount(0);
   });
 
-  // TC-EDGE-007: No horizontal overflow at 1280px
-  test('TC-EDGE-007: no horizontal overflow at 1280x720', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 720 });
-    await page.goto('/', { waitUntil: 'networkidle' });
+  // TC-EDGE-007: rota desconhecida responde 404
+  test('TC-EDGE-007: unknown route returns 404', async ({ page }) => {
+    const response = await page.goto('/pagina-que-nao-existe', { waitUntil: 'networkidle' });
+    expect(response?.status()).toBe(404);
+    await expect(page.getByRole('heading', { name: '404' })).toBeVisible();
+    // O layout continua lá, com caminho de volta
+    await expect(page.locator('header').getByRole('link', { name: 'Prize — página inicial' })).toBeVisible();
 
-    const overflow = await page.evaluate(() => {
-      return {
-        scrollWidth: document.body.scrollWidth,
-        innerWidth: window.innerWidth,
-      };
-    });
-
-    await page.screenshot({
-      path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-007-no-overflow-1280.png'),
-      fullPage: false,
-    });
-
-    expect(
-      overflow.scrollWidth,
-      `Horizontal overflow at 1280px: scrollWidth=${overflow.scrollWidth} > innerWidth=${overflow.innerWidth}`
-    ).toBeLessThanOrEqual(overflow.innerWidth);
+    await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-007-404.png') });
   });
 
-  // TC-EDGE-008: No horizontal overflow at 375px (with 20px tolerance)
-  test('TC-EDGE-008: no horizontal overflow at 375x667 (20px tolerance)', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('/', { waitUntil: 'networkidle' });
+  // TC-EDGE-008: imagens carregam (foto da home e avatares das ilustrações)
+  test('TC-EDGE-008: images load', async ({ page, request }) => {
+    await page.goto(ROUTES.home, { waitUntil: 'networkidle' });
+    const hero = page.locator('main img').first();
+    await expect(hero).toBeVisible();
+    await expect.poll(() => hero.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth)).toBeGreaterThan(0);
 
-    const overflow = await page.evaluate(() => {
-      return {
-        scrollWidth: document.body.scrollWidth,
-        innerWidth: window.innerWidth,
-      };
-    });
+    for (const file of ['hero.jpg', 'avatar-a.jpg', 'avatar-b.jpg']) {
+      const response = await request.get(`/img/site/${file}`);
+      expect(response.status(), file).toBe(200);
+      expect(response.headers()['content-type']).toContain('image/jpeg');
+    }
 
-    await page.screenshot({
-      path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-008-no-overflow-375.png'),
-      fullPage: false,
-    });
-
-    const tolerance = 20;
-    expect(
-      overflow.scrollWidth,
-      `Horizontal overflow at 375px: scrollWidth=${overflow.scrollWidth} > innerWidth=${overflow.innerWidth} + ${tolerance}px tolerance`
-    ).toBeLessThanOrEqual(overflow.innerWidth + tolerance);
+    await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-008-images.png') });
   });
 
-  // TC-EDGE-009: "Acessar conta" stays on same page
-  test('TC-EDGE-009: clicking "Acessar conta" stays on same page (/ or /#login)', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
+  // TC-EDGE-009: ilustrações animadas ficam paradas até aparecerem na tela, também após navegação no cliente
+  test('TC-EDGE-009: data-play illustrations start when scrolled into view', async ({ page }) => {
+    await page.goto(ROUTES.home, { waitUntil: 'networkidle' });
 
-    const ctaLink = page.locator('a', { hasText: 'Acessar conta' });
-    await ctaLink.click();
+    // Navegação no cliente (o observador precisa achar as ilustrações da página nova)
+    await page.locator('footer').getByRole('link', { name: 'Segurança', exact: true }).click();
+    await expect(page).toHaveURL(ROUTES.seguranca);
 
-    // Wait for any navigation to settle
-    await page.waitForLoadState('networkidle');
+    const ill = page.locator('main [data-play]').first();
+    await expect(ill).toBeAttached();
+    await expect(ill).not.toHaveAttribute('data-inview', '');
+    const pausedBefore = await ill.locator('.ia1').evaluate((el) => getComputedStyle(el).animationPlayState);
+    expect(pausedBefore).toBe('paused');
 
-    await page.screenshot({
-      path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-009-acessar-conta-same-page.png'),
-      fullPage: false,
-    });
+    await ill.scrollIntoViewIfNeeded();
+    await expect(ill).toHaveAttribute('data-inview', '');
+    const playingAfter = await ill.locator('.ia1').evaluate((el) => getComputedStyle(el).animationPlayState);
+    expect(playingAfter).toBe('running');
 
-    const url = new URL(page.url());
-    const isStillHomePage = url.pathname === '/' && (url.hash === '' || url.hash === '#login');
-
-    expect(
-      isStillHomePage,
-      `Expected URL to be / or /#login but got: ${page.url()}`
-    ).toBe(true);
+    await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-009-data-play.png') });
   });
 
-  // TC-EDGE-010: Social links have aria-labels
-  test('TC-EDGE-010: footer social links have aria-labels', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
+  // TC-EDGE-010: nenhum link quebrado entre as páginas
+  test('TC-EDGE-010: internal links and anchors resolve', async ({ page, request }) => {
+    const internal = new Set<string>();
+    const brokenAnchors: string[] = [];
 
-    const linkedinLink = page.locator('footer a[aria-label="LinkedIn"]');
-    const whatsappLink = page.locator('footer a[aria-label="WhatsApp"]');
-    const emailLink   = page.locator('footer a[aria-label="Email"]');
+    for (const route of ALL_ROUTES) {
+      await page.goto(route, { waitUntil: 'networkidle' });
+      const found = await page.evaluate(() => {
+        const hrefs = [...document.querySelectorAll('a[href]')].map((a) => a.getAttribute('href')!);
+        const anchors = hrefs.filter((h) => h.startsWith('#') && h.length > 1);
+        return {
+          internal: hrefs.filter((h) => h.startsWith('/')),
+          missing: anchors.filter((h) => !document.getElementById(h.slice(1))),
+          legacy: hrefs.filter((h) => /\.dc\.html|claude\.ai|_blob/.test(h)),
+        };
+      });
+      found.internal.forEach((h) => internal.add(h));
+      brokenAnchors.push(...found.missing.map((h) => `${route} ${h}`));
+      expect(found.legacy, `links do protótipo em ${route}`).toHaveLength(0);
+    }
 
-    await page.screenshot({
-      path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-010-social-aria-labels.png'),
-      fullPage: false,
-    });
-
-    await expect(linkedinLink).toHaveAttribute('aria-label', 'LinkedIn');
-    await expect(whatsappLink).toHaveAttribute('aria-label', 'WhatsApp');
-    await expect(emailLink).toHaveAttribute('aria-label', 'Email');
+    expect(brokenAnchors, brokenAnchors.join(', ')).toHaveLength(0);
+    for (const href of internal) {
+      const response = await request.get(href);
+      expect(response.status(), href).toBe(200);
+    }
   });
-
 });

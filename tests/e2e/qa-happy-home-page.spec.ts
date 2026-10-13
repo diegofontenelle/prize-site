@@ -1,264 +1,205 @@
 import { test, expect } from '@playwright/test';
+import { CONTACT, LOGIN_URL, MAIN_NAV, ROUTES } from '../../src/lib/site';
 
 const SCREENSHOTS_DIR = 'tests/results/happy';
 
-test.describe('Happy Path: home page', () => {
-  // TC-HAPPY-001: Page loads at /
-  test('TC-HAPPY-001: page loads at /', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
+/** As 7 páginas do site, com o título da aba e o H1 de cada uma. */
+const PAGES = [
+  { path: ROUTES.home, slug: 'home', title: 'Prize · Premiação por desempenho, paga por Pix', h1: 'Premie quem faz acontecer.' },
+  { path: ROUTES.comoFunciona, slug: 'como-funciona', title: 'Como funciona · Prize', h1: 'Do Pix da empresa ao Pix de quem fez acontecer.' },
+  { path: ROUTES.baseLegal, slug: 'base-legal', title: 'Base legal · Prize', h1: 'Prêmio não é salário, desde que seja prêmio de verdade.' },
+  { path: ROUTES.seguranca, slug: 'seguranca', title: 'Segurança · Prize', h1: 'Seguro para quem paga e para quem recebe.' },
+  { path: ROUTES.duvidas, slug: 'duvidas', title: 'Dúvidas · Prize', h1: 'Dúvidas frequentes' },
+  { path: ROUTES.recebeuPrizes, slug: 'recebeu-prizes', title: 'Recebeu Prizes? · Prize', h1: 'Você recebeu Prizes. Eles são seus.' },
+  { path: ROUTES.faleComAGente, slug: 'fale-com-a-gente', title: 'Fale com a gente · Prize', h1: 'Fale com a gente.' },
+] as const;
 
-    // Assert body exists (no crash)
-    await expect(page.locator('body')).toBeVisible();
+/** URLs do site antigo e para onde redirecionam (next.config.ts). */
+const OLD_URLS = [
+  { from: '/sobre', to: ROUTES.home },
+  { from: '/nossa-plataforma', to: ROUTES.comoFunciona },
+  { from: '/como-usar', to: ROUTES.comoFunciona },
+  { from: '/fale-conosco', to: ROUTES.faleComAGente },
+] as const;
 
-    // Assert the page has some meaningful content
-    const mainEl = page.locator('main');
-    await expect(mainEl).toBeVisible();
+test.describe('Happy Path: site', () => {
+  // TC-HAPPY-001: cada rota carrega com um <main> e o H1 da página
+  for (const [i, p] of PAGES.entries()) {
+    test(`TC-HAPPY-001.${i + 1}: ${p.path} loads with <main>`, async ({ page }) => {
+      const response = await page.goto(p.path, { waitUntil: 'networkidle' });
+      expect(response?.status()).toBe(200);
 
-    await page.screenshot({
-      path: `${SCREENSHOTS_DIR}/tc-001-page-loads.png`,
-      fullPage: false,
+      await expect(page).toHaveTitle(p.title);
+      await expect(page.locator('main')).toHaveCount(1);
+      await expect(page.locator('main')).toBeVisible();
+      await expect(page.locator('main h1')).toHaveText(p.h1);
+      await expect(page.locator('header')).toBeVisible();
+      await expect(page.locator('footer')).toBeAttached();
+
+      await page.screenshot({ path: `${SCREENSHOTS_DIR}/tc-001-${p.slug}.png` });
     });
-  });
+  }
 
-  // TC-HAPPY-002: Header fixed after scroll
-  test('TC-HAPPY-002: header fixed after scroll', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
+  // TC-HAPPY-002: header fica fixo no topo ao rolar
+  test('TC-HAPPY-002: header sticky after scroll', async ({ page }) => {
+    await page.goto(ROUTES.home, { waitUntil: 'networkidle' });
 
     const header = page.locator('header');
-    await expect(header).toBeVisible();
+    await expect(header).toHaveCSS('position', 'sticky');
 
-    // Scroll down 500px
-    await page.evaluate(() => window.scrollBy(0, 500));
-    await page.waitForTimeout(300);
+    await page.evaluate(() => window.scrollTo(0, 1200));
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(1000);
 
-    // Header must still be in viewport
     await expect(header).toBeInViewport();
+    const box = await header.boundingBox();
+    expect(box?.y).toBe(0);
 
-    await page.screenshot({
-      path: `${SCREENSHOTS_DIR}/tc-002-header-fixed-after-scroll.png`,
-      fullPage: false,
+    await page.screenshot({ path: `${SCREENSHOTS_DIR}/tc-002-header-sticky.png` });
+  });
+
+  // TC-HAPPY-003: logo do header leva para a página inicial
+  test('TC-HAPPY-003: header logo links to /', async ({ page }) => {
+    await page.goto(ROUTES.duvidas, { waitUntil: 'networkidle' });
+
+    const logo = page.locator('header').getByRole('link', { name: 'Prize — página inicial' });
+    await expect(logo).toBeVisible();
+    await expect(logo).toHaveAttribute('href', ROUTES.home);
+
+    await logo.click();
+    await expect(page).toHaveURL(ROUTES.home);
+    await expect(page.locator('main h1')).toHaveText(PAGES[0].h1);
+
+    await page.screenshot({ path: `${SCREENSHOTS_DIR}/tc-003-logo.png` });
+  });
+
+  test.describe('desktop navigation', () => {
+    // O menu principal só aparece acima de 1080px (abaixo disso, vira o menu "Abrir menu").
+    test.use({ viewport: { width: 1280, height: 800 } });
+
+    // TC-HAPPY-004: links do menu principal levam às rotas certas
+    test('TC-HAPPY-004: main nav links navigate to the right routes', async ({ page }) => {
+      await page.goto(ROUTES.home, { waitUntil: 'networkidle' });
+
+      const nav = page.getByRole('navigation', { name: 'Principal' });
+      await expect(nav).toBeVisible();
+      await expect(nav.getByRole('link')).toHaveText(MAIN_NAV.map((item) => item.label));
+
+      for (const item of MAIN_NAV) {
+        const link = nav.getByRole('link', { name: item.label, exact: true });
+        await expect(link).toHaveAttribute('href', item.href);
+        await link.click();
+
+        await expect(page).toHaveURL(item.href);
+        const target = PAGES.find((p) => p.path === item.href);
+        await expect(page.locator('main h1')).toHaveText(target!.h1);
+        // O link da página atual fica marcado
+        await expect(nav.getByRole('link', { name: item.label, exact: true })).toHaveAttribute('aria-current', 'page');
+      }
+
+      await page.screenshot({ path: `${SCREENSHOTS_DIR}/tc-004-main-nav.png` });
+    });
+
+    // TC-HAPPY-005: botão "Fale com a gente" do header leva ao formulário
+    test('TC-HAPPY-005: header "Fale com a gente" navigates to /fale-com-a-gente', async ({ page }) => {
+      await page.goto(ROUTES.home, { waitUntil: 'networkidle' });
+
+      const cta = page.locator('header').getByRole('link', { name: 'Fale com a gente' }).first();
+      await expect(cta).toBeVisible();
+      await cta.click();
+
+      await expect(page).toHaveURL(ROUTES.faleComAGente);
+      await expect(page.getByRole('heading', { name: 'Pedir uma proposta' })).toBeVisible();
+
+      await page.screenshot({ path: `${SCREENSHOTS_DIR}/tc-005-header-cta.png` });
     });
   });
 
-  // TC-HAPPY-003: Logo renders and links to /
-  test('TC-HAPPY-003: logo renders and links to /', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
+  // TC-HAPPY-006: "Entrar" aponta para o acesso à conta (LOGIN_URL), em nova aba
+  test('TC-HAPPY-006: "Entrar" points to LOGIN_URL', async ({ page }) => {
+    await page.goto(ROUTES.home, { waitUntil: 'networkidle' });
 
-    // The logo link is inside the header and has href="/"
-    const logoLink = page.locator('header a[href="/"]');
-    await expect(logoLink).toBeVisible();
+    const headerLink = page.locator('header').getByRole('link', { name: 'Entrar', exact: true });
+    await expect(headerLink).toBeVisible();
 
-    // There must be an img inside the logo link
-    const logoImg = logoLink.locator('img');
-    await expect(logoImg).toBeVisible();
+    // Todos os "Entrar" da página (header, seção "Recebeu Prizes?" e rodapé)
+    const all = page.getByRole('link', { name: 'Entrar', exact: true });
+    expect(await all.count()).toBeGreaterThanOrEqual(3);
+    for (const link of await all.all()) {
+      await expect(link).toHaveAttribute('href', LOGIN_URL);
+      await expect(link).toHaveAttribute('target', '_blank');
+      await expect(link).toHaveAttribute('rel', /noopener/);
+    }
 
-    await page.screenshot({
-      path: `${SCREENSHOTS_DIR}/tc-003-logo-renders.png`,
-      fullPage: false,
-    });
+    await page.screenshot({ path: `${SCREENSHOTS_DIR}/tc-006-entrar.png` });
   });
 
-  // TC-HAPPY-004: Nav links visible and navigate
-  test('TC-HAPPY-004: nav links visible and navigate', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
+  // TC-HAPPY-007: URLs antigas redirecionam (308) para as páginas novas
+  for (const [i, r] of OLD_URLS.entries()) {
+    test(`TC-HAPPY-007.${i + 1}: ${r.from} redirects to ${r.to}`, async ({ page, request }) => {
+      const response = await request.get(r.from, { maxRedirects: 0 });
+      expect(response.status()).toBe(308);
+      expect(new URL(response.headers()['location'], 'http://localhost').pathname).toBe(r.to);
 
-    const nav = page.locator('header nav');
-
-    // Assert all three nav links are present and visible
-    const produtoLink = nav.getByRole('link', { name: 'Produto' });
-    const sobreLink = nav.getByRole('link', { name: 'Sobre' });
-    const ajudaLink = nav.getByRole('link', { name: 'Ajuda' });
-
-    await expect(produtoLink).toBeVisible();
-    await expect(sobreLink).toBeVisible();
-    await expect(ajudaLink).toBeVisible();
-
-    // Click Produto → /nossa-plataforma
-    await produtoLink.click();
-    await page.waitForLoadState('networkidle');
-    await expect(page).toHaveURL(/\/nossa-plataforma/);
-    await page.goBack({ waitUntil: 'networkidle' });
-
-    // Click Sobre → /sobre
-    await nav.getByRole('link', { name: 'Sobre' }).click();
-    await page.waitForLoadState('networkidle');
-    await expect(page).toHaveURL(/\/sobre/);
-    await page.goBack({ waitUntil: 'networkidle' });
-
-    // Click Ajuda → /como-usar
-    await nav.getByRole('link', { name: 'Ajuda' }).click();
-    await page.waitForLoadState('networkidle');
-    await expect(page).toHaveURL(/\/como-usar/);
-    await page.goBack({ waitUntil: 'networkidle' });
-
-    await page.screenshot({
-      path: `${SCREENSHOTS_DIR}/tc-004-nav-links.png`,
-      fullPage: false,
+      await page.goto(r.from, { waitUntil: 'networkidle' });
+      expect(new URL(page.url()).pathname).toBe(r.to);
+      await expect(page.locator('main')).toBeVisible();
     });
-  });
+  }
 
-  // TC-HAPPY-005: "Acessar conta" button visible with href="#login"
-  test('TC-HAPPY-005: "Acessar conta" button visible with href="#login"', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-
-    const acessarConta = page.locator('header').getByRole('link', { name: 'Acessar conta' });
-    await expect(acessarConta).toBeVisible();
-
-    const href = await acessarConta.getAttribute('href');
-    expect(href).toBe('#login');
-
-    await page.screenshot({
-      path: `${SCREENSHOTS_DIR}/tc-005-acessar-conta-button.png`,
-      fullPage: false,
-    });
-  });
-
-  // TC-HAPPY-006: Hero H1 visible
-  test('TC-HAPPY-006: hero H1 visible', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-
-    const h1 = page.locator('h1').first();
-    await expect(h1).toBeVisible();
-    await expect(h1).toContainText('Bonifique sua equipe de forma inteligente');
-
-    await page.screenshot({
-      path: `${SCREENSHOTS_DIR}/tc-006-hero-h1.png`,
-      fullPage: false,
-    });
-  });
-
-  // TC-HAPPY-007: Hero CTA links to /como-usar
-  test('TC-HAPPY-007: hero CTA links to /como-usar', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-
-    // The hero section is the first section; its CTA link is the first "Contrate nossos serviços"
-    const heroCTA = page
-      .locator('section')
-      .first()
-      .getByRole('link', { name: /Contrate nossos serviços/i });
-
-    await expect(heroCTA).toBeVisible();
-    await heroCTA.click();
-    await page.waitForLoadState('networkidle');
-    await expect(page).toHaveURL(/\/como-usar/);
-
-    await page.screenshot({
-      path: `${SCREENSHOTS_DIR}/tc-007-hero-cta-navigates.png`,
-      fullPage: false,
-    });
-  });
-
-  // TC-HAPPY-008: Solutions section text visible
-  test('TC-HAPPY-008: solutions section text visible', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-
-    await expect(
-      page.getByText('Tudo que sua empresa precisa', { exact: false }),
-    ).toBeVisible();
-
-    await page.screenshot({
-      path: `${SCREENSHOTS_DIR}/tc-008-solutions-text.png`,
-      fullPage: false,
-    });
-  });
-
-  // TC-HAPPY-009: Resources 4 feature cards
-  test('TC-HAPPY-009: resources 4 feature cards', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-
-    await expect(page.getByText('Prêmios com pagamentos instantâneos')).toBeVisible();
-    await expect(page.getByText('Histórico de todas as transações feitas')).toBeVisible();
-    await expect(page.getByText('Diversas opções de resgate de créditos')).toBeVisible();
-    await expect(page.getByText('Sem uso de informações sensíveis')).toBeVisible();
-
-    await page.screenshot({
-      path: `${SCREENSHOTS_DIR}/tc-009-resource-cards.png`,
-      fullPage: false,
-    });
-  });
-
-  // TC-HAPPY-010: CTA headline visible
-  test('TC-HAPPY-010: CTA headline visible', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-
-    await expect(
-      page.getByText('Premie de forma inteligente', { exact: false }),
-    ).toBeVisible();
-
-    await page.screenshot({
-      path: `${SCREENSHOTS_DIR}/tc-010-cta-headline.png`,
-      fullPage: false,
-    });
-  });
-
-  // TC-HAPPY-011: CTA button links to /como-usar
-  test('TC-HAPPY-011: CTA section button links to /como-usar', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-
-    // The CTA section contains the h2 "Premie de forma inteligente..." followed by the button.
-    // We scope to the section that contains that heading.
-    const ctaSection = page.locator('section').filter({
-      has: page.locator('h2', { hasText: 'Premie de forma inteligente' }),
-    });
-
-    await expect(ctaSection).toBeVisible();
-
-    const ctaButton = ctaSection.getByRole('link', { name: /Contrate nossos serviços/i });
-    await expect(ctaButton).toBeVisible();
-    await ctaButton.click();
-    await page.waitForLoadState('networkidle');
-    await expect(page).toHaveURL(/\/como-usar/);
-
-    await page.screenshot({
-      path: `${SCREENSHOTS_DIR}/tc-011-cta-button-navigates.png`,
-      fullPage: false,
-    });
-  });
-
-  // TC-HAPPY-012: Footer contact info visible
-  test('TC-HAPPY-012: footer contact info visible', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
+  // TC-HAPPY-008: rodapé com links das páginas e contato
+  test('TC-HAPPY-008: footer links and contact info', async ({ page }) => {
+    await page.goto(ROUTES.home, { waitUntil: 'networkidle' });
 
     const footer = page.locator('footer');
-    await expect(footer.getByText('atendimento@cashin.com.br')).toBeVisible();
-    await expect(footer.getByText('+55 (11) 97582-1007')).toBeVisible();
+    await footer.scrollIntoViewIfNeeded();
 
-    await page.screenshot({
-      path: `${SCREENSHOTS_DIR}/tc-012-footer-contact.png`,
-      fullPage: false,
-    });
-  });
+    const footerNav = footer.getByRole('navigation', { name: 'Rodapé' });
+    for (const item of MAIN_NAV) {
+      await expect(footerNav.getByRole('link', { name: item.label, exact: true })).toHaveAttribute('href', item.href);
+    }
 
-  // TC-HAPPY-013: Footer social icons
-  test('TC-HAPPY-013: footer social icons', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-
-    const footer = page.locator('footer');
-
-    const linkedin = footer.getByRole('link', { name: 'LinkedIn' });
-    const whatsapp = footer.getByRole('link', { name: 'WhatsApp' });
-    const email = footer.getByRole('link', { name: 'Email' });
-
-    await expect(linkedin).toBeVisible();
-    await expect(whatsapp).toBeVisible();
+    const email = footer.getByRole('link', { name: CONTACT.email });
     await expect(email).toBeVisible();
+    await expect(email).toHaveAttribute('href', `mailto:${CONTACT.email}`);
 
-    await page.screenshot({
-      path: `${SCREENSHOTS_DIR}/tc-013-footer-social-icons.png`,
-      fullPage: false,
-    });
-  });
+    const phone = footer.getByRole('link', { name: CONTACT.phoneLabel });
+    await expect(phone).toBeVisible();
+    await expect(phone).toHaveAttribute('href', CONTACT.phoneHref);
 
-  // TC-HAPPY-014: Footer copyright
-  test('TC-HAPPY-014: footer copyright', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-
-    const footer = page.locator('footer');
     await expect(footer.getByText('© 2026 Prize', { exact: false })).toBeVisible();
 
-    await page.screenshot({
-      path: `${SCREENSHOTS_DIR}/tc-014-footer-copyright.png`,
-      fullPage: false,
-    });
+    await page.screenshot({ path: `${SCREENSHOTS_DIR}/tc-008-footer.png` });
+  });
+
+  // TC-HAPPY-009: chamadas da página inicial levam às páginas de cada assunto
+  test('TC-HAPPY-009: home CTAs navigate to their pages', async ({ page }) => {
+    await page.goto(ROUTES.home, { waitUntil: 'networkidle' });
+
+    const ctas = [
+      { name: 'Ver como funciona', to: ROUTES.comoFunciona },
+      { name: 'Ver segurança', to: ROUTES.seguranca },
+      { name: 'Ver a base legal', to: ROUTES.baseLegal },
+      { name: 'Ver como sacar', to: ROUTES.recebeuPrizes },
+      { name: 'Ver todas as dúvidas', to: ROUTES.duvidas },
+    ];
+    for (const cta of ctas) {
+      const link = page.locator('main').getByRole('link', { name: cta.name, exact: true });
+      await link.scrollIntoViewIfNeeded();
+      await link.click();
+      await expect(page).toHaveURL(cta.to);
+      await expect(page.locator('main h1')).toBeVisible();
+      await page.goBack({ waitUntil: 'networkidle' });
+      await expect(page).toHaveURL(ROUTES.home);
+    }
+
+    // Todo link interno do <main> da home aponta para uma rota existente
+    const hrefs = await page
+      .locator('main a[href^="/"]')
+      .evaluateAll((links) => [...new Set(links.map((a) => a.getAttribute('href')))]);
+    const known: string[] = Object.values(ROUTES);
+    expect(hrefs.length).toBeGreaterThan(0);
+    for (const href of hrefs) expect(known).toContain(href);
+
+    await page.screenshot({ path: `${SCREENSHOTS_DIR}/tc-009-home-ctas.png` });
   });
 });

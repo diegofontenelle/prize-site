@@ -1,25 +1,92 @@
-@import "tailwindcss";
+/* Tailwind sem o preflight: o layout do site segue o protótipo, que não usa reset. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 
-:root {
-  --background: #ffffff;
-  --foreground: #111827;
+/* ── Base comum a todas as páginas (vem do protótipo "versão descontraída") ── */
+body{margin:0;background:#FFFFFF}
+.site{min-width:0;background:#FFFFFF;font-family:var(--font-figtree),ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#0E1A33;font-size:16px;line-height:1.5;overflow-x:clip}
+.site *{box-sizing:border-box}
+.site h1,.site h2,.site h3,.site p,.site ol,.site ul,.site blockquote,.site figure{margin:0}
+a{color:#1D4ED8;text-decoration:none}
+a:hover{color:#1E40AF}
+.ic{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.tnum{font-variant-numeric:tabular-nums}
+:focus-visible{outline:3px solid #3B82F6;outline-offset:3px}
+.on-blue :focus-visible,.on-navy :focus-visible{outline-color:#FFFFFF}
+.more{transition:gap .2s ease}
+.more:hover{gap:14px !important}
+.pill{transition:transform .2s ease,background .2s ease}
+.pill:hover{transform:translateY(-2px)}
+.pill-blue:hover{background:#1D4ED8 !important;color:#FFFFFF !important}
+.pill-white:hover{background:#EEF4FF !important;color:#1D4ED8 !important}
+.pill-line:hover{background:#EEF4FF !important;color:#1D4ED8 !important}
+.pill-ghost:hover{background:rgba(255,255,255,0.14) !important;color:#FFFFFF !important}
+.btn-primary{transition:background .2s ease,transform .2s ease}
+.btn-primary:hover{background:#1D4ED8 !important;color:#FFFFFF !important;transform:translateY(-1px)}
+.btn-ghost:hover{background:#EEF4FF !important;color:#1D4ED8 !important}
+.navlink:hover{background:#EEF4FF !important;color:#1D4ED8 !important}
+.flink:hover{color:#FFFFFF !important}
+.mlink:hover{background:#F5F7FB !important}
+summary{list-style:none;cursor:pointer}
+summary::-webkit-details-marker{display:none}
+.faq-plus{transition:transform .25s ease}
+.faq[open] .faq-plus{transform:rotate(45deg)}
+.mnav{display:none}
+
+/* Passos numerados ligados por uma linha vertical */
+.step{position:relative}
+.step:not(:last-child)::after{content:"";position:absolute;left:21px;top:52px;bottom:-18px;width:2px;border-radius:2px;background:#BFDBFE}
+
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-14px)}}
+@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{opacity:0;transform:translateY(12px) scale(.92)}100%{opacity:1;transform:none}}
+@keyframes blink{50%{opacity:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.rise{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+.d1{animation-delay:.12s}.d2{animation-delay:.24s}
+.pop{animation:pop .7s cubic-bezier(.2,.7,.2,1) both}
+.p1{animation-delay:.6s}.p2{animation-delay:.9s}
+.float-a{animation:floaty 7s ease-in-out infinite}
+.float-b{animation:floaty 8s ease-in-out 1s infinite}
+.drift{animation:drift 22s ease-in-out infinite}
+.drift-b{animation:drift 26s ease-in-out 3s infinite reverse}
+.caret{animation:blink 1.1s steps(1) infinite}
+.mark-spin{animation:spin 240s linear infinite}
+
+/* Ilustrações animadas: ficam paradas no primeiro quadro até aparecerem na tela (ver PlayOnView). */
+[data-play]:not([data-inview]),
+[data-play]:not([data-inview]) *{animation-play-state:paused !important}
+
+.ill{display:block}
+.ill-m{display:none}
+.ill text{font-family:var(--font-figtree),ui-sans-serif,system-ui,sans-serif}
+
+.no-motion *{animation:none !important;transition:none !important}
+@media (prefers-reduced-motion: reduce){.site *{animation:none !important;transition:none !important}}
+
+@media (max-width: 1080px){.dnav{display:none !important}.mnav{display:block}}
+/* Painéis ilustrados (.viz*), selos flutuantes (.chip-*), marca d'água do topo (.page-mark) e citação (.quote) */
+@media (min-width: 761px) and (max-width: 1035px){
+.viz-panel{height:520px !important}
+.viz-tall{height:640px !important}
+.viz-phone{left:50% !important;margin-left:-148px !important}
 }
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --color-brand-50: #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
-  --color-brand-800: #1e40af;
-  --color-brand-900: #1e3a8a;
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
+@media (max-width: 760px){
+.hide-sm{display:none !important}
+.hdr-cta{display:none !important}
+.cta-row{width:100%}
+.cta-row a{flex:1 1 100%;justify-content:center}
+.ill-d{display:none}
+.ill-m{display:block}
+.page-mark{width:300px !important;height:300px !important;right:-120px !important;top:auto !important;bottom:-130px !important;margin-top:0 !important}
+.viz{margin-bottom:28px}
+.viz-panel{height:460px !important}
+.viz-phone{left:50% !important;margin-left:-148px !important;top:32px !important;transform:scale(.86);transform-origin:50% 0}
+.viz-card{transform:translate(-50%,-50%) scale(.84) !important}
+.viz-tall{height:560px !important}
+.chip-r{right:12px !important;left:auto !important;top:auto !important;bottom:-36px !important}
+.chip-l{left:12px !important;right:auto !important;top:auto !important;bottom:-36px !important}
+.quote{padding:24px !important}
 }

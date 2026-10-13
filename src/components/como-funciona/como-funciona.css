@@ -1,0 +1,79 @@
+/* Página "Como funciona": regras do protótipo que não estão em globals.css, escopadas em .pg-como-funciona. */
+
+/* Ilustração "Do saldo ao prêmio de cada pessoa": ib* = desktop, ibm* = celular. Toca uma vez (data-play). */
+@keyframes como-funciona-ib1{0%,4.76%{opacity:0;transform:scale(0.8)}11.90%{opacity:1;transform:scale(1.06)}15.48%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ib1{animation:como-funciona-ib1 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ib2{0%,13.10%{opacity:0;transform:translate(0px,0px)}20.24%,100%{opacity:1;transform:translate(0,0)}}
+.pg-como-funciona .ib2{animation:como-funciona-ib2 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes como-funciona-ib3{0%,16.43%{opacity:0;transform:translate(196px,210px)}17.86%{opacity:1;transform:translate(196px,210px)}29.76%{opacity:1;transform:translate(252px,210px)}32.62%,100%{opacity:0;transform:translate(252px,210px)}}
+.pg-como-funciona .ib3{animation:como-funciona-ib3 4.2s linear 1 both;opacity:0}
+@keyframes como-funciona-ib4{0%,27.38%{opacity:0;transform:scale(0.6)}34.52%{opacity:1;transform:scale(1.06)}38.10%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ib4{animation:como-funciona-ib4 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ib5{0%,36.90%{opacity:0;transform:translate(0px,0px)}44.05%,100%{opacity:1;transform:translate(0,0)}}
+.pg-como-funciona .ib5{animation:como-funciona-ib5 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes como-funciona-ib6{0%,40.24%{opacity:0;transform:translate(440px,210px)}41.67%{opacity:1;transform:translate(440px,210px)}45.27%{opacity:1;transform:translate(476px,210px)}57.50%{opacity:1;transform:translate(476px,88px)}61.90%{opacity:1;transform:translate(520px,88px)}64.76%,100%{opacity:0;transform:translate(520px,88px)}}
+.pg-como-funciona .ib6{animation:como-funciona-ib6 4.2s linear 1 both;opacity:0}
+@keyframes como-funciona-ib7{0%,58.33%{opacity:0;transform:scale(0.75)}65.48%{opacity:1;transform:scale(1.06)}69.05%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ib7{animation:como-funciona-ib7 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ib8{0%,64.29%{opacity:0;transform:translate(0px,6px)}71.43%,100%{opacity:1;transform:translate(0,0)}}
+.pg-como-funciona .ib8{animation:como-funciona-ib8 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes como-funciona-ib9{0%,76.19%{opacity:0;transform:scale(0.3)}83.33%{opacity:1;transform:scale(1.06)}86.90%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ib9{animation:como-funciona-ib9 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ib10{0%,43.10%{opacity:0;transform:translate(440px,210px)}44.52%{opacity:1;transform:translate(440px,210px)}64.76%{opacity:1;transform:translate(520px,210px)}67.62%,100%{opacity:0;transform:translate(520px,210px)}}
+.pg-como-funciona .ib10{animation:como-funciona-ib10 4.2s linear 1 both;opacity:0}
+@keyframes como-funciona-ib11{0%,61.19%{opacity:0;transform:scale(0.75)}68.33%{opacity:1;transform:scale(1.06)}71.90%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ib11{animation:como-funciona-ib11 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ib12{0%,67.14%{opacity:0;transform:translate(0px,6px)}74.29%,100%{opacity:1;transform:translate(0,0)}}
+.pg-como-funciona .ib12{animation:como-funciona-ib12 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes como-funciona-ib13{0%,79.05%{opacity:0;transform:scale(0.3)}86.19%{opacity:1;transform:scale(1.06)}89.76%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ib13{animation:como-funciona-ib13 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ib14{0%,45.95%{opacity:0;transform:translate(440px,210px)}47.38%{opacity:1;transform:translate(440px,210px)}50.99%{opacity:1;transform:translate(476px,210px)}63.21%{opacity:1;transform:translate(476px,332px)}67.62%{opacity:1;transform:translate(520px,332px)}70.48%,100%{opacity:0;transform:translate(520px,332px)}}
+.pg-como-funciona .ib14{animation:como-funciona-ib14 4.2s linear 1 both;opacity:0}
+@keyframes como-funciona-ib15{0%,64.05%{opacity:0;transform:scale(0.75)}71.19%{opacity:1;transform:scale(1.06)}74.76%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ib15{animation:como-funciona-ib15 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ib16{0%,70.00%{opacity:0;transform:translate(0px,6px)}77.14%,100%{opacity:1;transform:translate(0,0)}}
+.pg-como-funciona .ib16{animation:como-funciona-ib16 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes como-funciona-ib17{0%,81.90%{opacity:0;transform:scale(0.3)}89.05%{opacity:1;transform:scale(1.06)}92.62%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ib17{animation:como-funciona-ib17 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ib18{0%,67.86%{opacity:1}72.62%,100%{opacity:0}}
+.pg-como-funciona .ib18{animation:como-funciona-ib18 4.2s cubic-bezier(.2,.7,.2,1) 1 both;opacity:0}
+@keyframes como-funciona-ib19{0%,72.62%{opacity:0;transform:translate(0px,8px)}79.76%,100%{opacity:1;transform:translate(0,0)}}
+.pg-como-funciona .ib19{animation:como-funciona-ib19 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes como-funciona-ibm1{0%,4.76%{opacity:0;transform:scale(0.8)}11.90%{opacity:1;transform:scale(1.06)}15.48%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ibm1{animation:como-funciona-ibm1 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ibm2{0%,13.10%{opacity:0;transform:translate(0px,0px)}20.24%,100%{opacity:1;transform:translate(0,0)}}
+.pg-como-funciona .ibm2{animation:como-funciona-ibm2 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes como-funciona-ibm3{0%,16.43%{opacity:0;transform:translate(180px,96px)}17.86%{opacity:1;transform:translate(180px,96px)}29.76%{opacity:1;transform:translate(180px,140px)}32.62%,100%{opacity:0;transform:translate(180px,140px)}}
+.pg-como-funciona .ibm3{animation:como-funciona-ibm3 4.2s linear 1 both;opacity:0}
+@keyframes como-funciona-ibm4{0%,27.38%{opacity:0;transform:scale(0.6)}34.52%{opacity:1;transform:scale(1.06)}38.10%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ibm4{animation:como-funciona-ibm4 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ibm5{0%,36.90%{opacity:0;transform:translate(0px,0px)}44.05%,100%{opacity:1;transform:translate(0,0)}}
+.pg-como-funciona .ibm5{animation:como-funciona-ibm5 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes como-funciona-ibm6{0%,40.24%{opacity:0;transform:translate(180px,204px)}41.67%{opacity:1;transform:translate(180px,204px)}43.77%{opacity:1;transform:translate(180px,230px)}53.65%{opacity:1;transform:translate(58px,230px)}58.50%{opacity:1;transform:translate(58px,290px)}61.90%{opacity:1;transform:translate(100px,290px)}64.76%,100%{opacity:0;transform:translate(100px,290px)}}
+.pg-como-funciona .ibm6{animation:como-funciona-ibm6 4.2s linear 1 both;opacity:0}
+@keyframes como-funciona-ibm7{0%,58.33%{opacity:0;transform:scale(0.75)}65.48%{opacity:1;transform:scale(1.06)}69.05%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ibm7{animation:como-funciona-ibm7 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ibm8{0%,64.29%{opacity:0;transform:translate(0px,6px)}71.43%,100%{opacity:1;transform:translate(0,0)}}
+.pg-como-funciona .ibm8{animation:como-funciona-ibm8 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes como-funciona-ibm9{0%,76.19%{opacity:0;transform:scale(0.3)}83.33%{opacity:1;transform:scale(1.06)}86.90%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ibm9{animation:como-funciona-ibm9 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ibm10{0%,43.10%{opacity:0;transform:translate(180px,204px)}44.52%{opacity:1;transform:translate(180px,204px)}46.07%{opacity:1;transform:translate(180px,230px)}53.33%{opacity:1;transform:translate(58px,230px)}62.26%{opacity:1;transform:translate(58px,380px)}64.76%{opacity:1;transform:translate(100px,380px)}67.62%,100%{opacity:0;transform:translate(100px,380px)}}
+.pg-como-funciona .ibm10{animation:como-funciona-ibm10 4.2s linear 1 both;opacity:0}
+@keyframes como-funciona-ibm11{0%,61.19%{opacity:0;transform:scale(0.75)}68.33%{opacity:1;transform:scale(1.06)}71.90%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ibm11{animation:como-funciona-ibm11 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ibm12{0%,67.14%{opacity:0;transform:translate(0px,6px)}74.29%,100%{opacity:1;transform:translate(0,0)}}
+.pg-como-funciona .ibm12{animation:como-funciona-ibm12 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes como-funciona-ibm13{0%,79.05%{opacity:0;transform:scale(0.3)}86.19%{opacity:1;transform:scale(1.06)}89.76%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ibm13{animation:como-funciona-ibm13 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ibm14{0%,45.95%{opacity:0;transform:translate(180px,204px)}47.38%{opacity:1;transform:translate(180px,204px)}48.60%{opacity:1;transform:translate(180px,230px)}54.35%{opacity:1;transform:translate(58px,230px)}65.64%{opacity:1;transform:translate(58px,470px)}67.62%{opacity:1;transform:translate(100px,470px)}70.48%,100%{opacity:0;transform:translate(100px,470px)}}
+.pg-como-funciona .ibm14{animation:como-funciona-ibm14 4.2s linear 1 both;opacity:0}
+@keyframes como-funciona-ibm15{0%,64.05%{opacity:0;transform:scale(0.75)}71.19%{opacity:1;transform:scale(1.06)}74.76%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ibm15{animation:como-funciona-ibm15 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ibm16{0%,70.00%{opacity:0;transform:translate(0px,6px)}77.14%,100%{opacity:1;transform:translate(0,0)}}
+.pg-como-funciona .ibm16{animation:como-funciona-ibm16 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}
+@keyframes como-funciona-ibm17{0%,81.90%{opacity:0;transform:scale(0.3)}89.05%{opacity:1;transform:scale(1.06)}92.62%,100%{opacity:1;transform:scale(1)}}
+.pg-como-funciona .ibm17{animation:como-funciona-ibm17 4.2s cubic-bezier(.2,.7,.2,1) 1 both;transform-box:fill-box;transform-origin:center}
+@keyframes como-funciona-ibm18{0%,67.86%{opacity:1}72.62%,100%{opacity:0}}
+.pg-como-funciona .ibm18{animation:como-funciona-ibm18 4.2s cubic-bezier(.2,.7,.2,1) 1 both;opacity:0}
+@keyframes como-funciona-ibm19{0%,72.62%{opacity:0;transform:translate(0px,8px)}79.76%,100%{opacity:1;transform:translate(0,0)}}
+.pg-como-funciona .ibm19{animation:como-funciona-ibm19 4.2s cubic-bezier(.2,.7,.2,1) 1 both;}

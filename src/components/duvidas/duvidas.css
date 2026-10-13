@@ -1,0 +1,3 @@
+/* Página "Dúvidas": regras do protótipo que não estão em globals.css, isoladas em .pg-duvidas. */
+.pg-duvidas .grp:hover{background:#DBE8FF !important}
+@media (max-width: 760px){.pg-duvidas .faq-aside{position:static !important}.pg-duvidas .faq > p{padding-right:0 !important}}
