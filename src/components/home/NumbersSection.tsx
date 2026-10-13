@@ -44,7 +44,8 @@ const STATS: Stat[] = [
     srText: "Mais de 15 mil colaboradores",
   },
   {
-    from: 1,
+    // Começa em 2 para nunca mostrar "R$ 1 milhões".
+    from: 2,
     to: 40,
     delay: "0.30s",
     icon: (
@@ -75,7 +76,7 @@ function valueAt(from: number, to: number, p: number) {
 /**
  * "Com a Prize, empresas já premiaram". Quando a seção fica 35% visível, os números
  * contam de `from` até `to` e a classe st-run dispara as animações do CSS.
- * Sem JS (ou com movimento reduzido) os valores finais já vêm no HTML.
+ * Antes e depois da contagem, e sem JS ou com movimento reduzido, aparecem os valores finais.
  */
 export default function NumbersSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -119,10 +120,9 @@ export default function NumbersSection() {
         if (raf) return;
         // Saiu totalmente da tela: pode contar de novo na próxima vez.
         if (ratio === 0) done = false;
-        if (!done) {
-          setProgress(0);
-          setRunning(false);
-        }
+        // Fora da contagem os números ficam nos valores finais (nunca "R$ 1 milhões" parado na tela);
+        // só tira st-run para as animações do CSS recomeçarem na próxima contagem.
+        if (!done) setRunning(false);
       },
       { threshold: [0, 0.35] },
     );

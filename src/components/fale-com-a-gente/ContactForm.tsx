@@ -26,6 +26,25 @@ function validate(data: FormData): Errors {
   return errors;
 }
 
+/** Ordem dos campos na tela, para achar o primeiro com erro. */
+const FIELD_ORDER: FieldKey[] = ["nome", "email", "celular", "empresa", "cargo", "pessoas", "volume", "quem", "privacidade"];
+
+/**
+ * Leva a pessoa ao primeiro campo com erro: o botão Enviar fica no fim do formulário,
+ * longe dos campos de cima, e sem isto o erro ficaria fora da tela.
+ */
+function focusFirstInvalid(form: HTMLFormElement, errors: Errors) {
+  const first = FIELD_ORDER.find((key) => errors[key]);
+  if (!first) return;
+  const item = form.elements.namedItem(first);
+  // Grupo de rádios ("quem") vem como RadioNodeList: foca a primeira opção.
+  const el = item instanceof RadioNodeList ? item[0] : item;
+  if (!(el instanceof HTMLElement)) return;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  el.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" });
+  el.focus({ preventScroll: true });
+}
+
 const borderColor = (invalid: boolean | undefined) => (invalid ? "#B42318" : "#8A94A6");
 
 const fieldStyle: CSSProperties = { display: "flex", flexDirection: "column", gap: 6 };
@@ -129,12 +148,19 @@ const QUEM = ["Empregados da empresa", "Pessoas de empresas parceiras", "Os dois
 export default function ContactForm() {
   const [errors, setErrors] = useState<Errors>({});
   const [sent, setSent] = useState<Sent | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const sentRef = useRef<HTMLDivElement>(null);
   const sentTitleRef = useRef<HTMLHeadingElement>(null);
   const hasErrors = Object.keys(errors).length > 0;
 
   // O botão Enviar fica no fim do formulário, e o estado de enviado é bem mais curto que ele:
   // sem isto, quem rolou até o botão ficaria olhando o rodapé e perderia o foco do teclado.
+  // Cada envio com erro cria um objeto novo de erros: foca o primeiro campo marcado depois
+  // que as mensagens já estão na tela (o leitor de tela lê o erro junto com o campo).
+  useEffect(() => {
+    if (formRef.current) focusFirstInvalid(formRef.current, errors);
+  }, [errors]);
+
   useEffect(() => {
     if (!sent) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -189,7 +215,7 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} aria-labelledby="form-t" style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+    <form ref={formRef} onSubmit={handleSubmit} aria-labelledby="form-t" style={{ display: "flex", flexDirection: "column", gap: 22 }}>
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         <h2 id="form-t" style={{ fontFamily: FONT_DISPLAY, fontSize: 26, fontWeight: 700, lineHeight: 1.2 }}>
           Pedir uma proposta

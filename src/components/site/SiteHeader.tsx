@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { LOGIN_URL, MAIN_NAV, ROUTES } from "@/lib/site";
 import { PrizeWordmark } from "./Brand";
 
@@ -10,6 +10,32 @@ export default function SiteHeader() {
   const pathname = usePathname();
   const menuRef = useRef<HTMLDetailsElement>(null);
   const closeMenu = () => menuRef.current?.removeAttribute("open");
+
+  // O cabeçalho continua montado entre as páginas: fecha o menu a cada troca de rota
+  // (logo, voltar/avançar do navegador), além dos cliques nos links do próprio menu.
+  useEffect(() => {
+    menuRef.current?.removeAttribute("open");
+  }, [pathname]);
+
+  // Fecha com Esc (devolvendo o foco ao botão) e com clique/toque fora do menu.
+  useEffect(() => {
+    const onPointerDown = (e: PointerEvent) => {
+      const menu = menuRef.current;
+      if (menu?.open && !menu.contains(e.target as Node)) menu.removeAttribute("open");
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      const menu = menuRef.current;
+      if (e.key !== "Escape" || !menu?.open) return;
+      menu.removeAttribute("open");
+      menu.querySelector("summary")?.focus();
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
 
   return (
     <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(255, 255, 255, 0.95)", backdropFilter: "blur(10px)" }}>

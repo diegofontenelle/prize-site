@@ -73,6 +73,43 @@ test.describe('Unhappy Path & Edge Cases: site', () => {
 
       await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-002-mobile-menu-navigated.png') });
     });
+
+    // TC-EDGE-011: menu do celular fecha com Esc, toque fora, logo e voltar do navegador
+    test('TC-EDGE-011: mobile menu closes on Escape, outside tap, logo and back', async ({ page }) => {
+      await page.goto(ROUTES.home, { waitUntil: 'networkidle' });
+      const menu = page.locator('header details.mnav');
+      const toggle = menu.locator('summary');
+
+      // Esc fecha e devolve o foco ao botão do menu
+      await toggle.click();
+      await expect(menu).toHaveAttribute('open', '');
+      await page.keyboard.press('Escape');
+      await expect(menu).not.toHaveAttribute('open', '');
+      await expect(toggle).toBeFocused();
+
+      // Toque fora do menu fecha (na margem esquerda; o painel do menu fica alinhado à direita)
+      await toggle.click();
+      await expect(menu).toHaveAttribute('open', '');
+      await page.mouse.click(8, 300);
+      await expect(menu).not.toHaveAttribute('open', '');
+
+      // Logo (mesma página) fecha
+      await toggle.click();
+      await page.locator('header').getByRole('link', { name: 'Prize — página inicial' }).click();
+      await expect(menu).not.toHaveAttribute('open', '');
+
+      // Voltar do navegador com o menu aberto troca de página e fecha o menu
+      await menu.locator('summary').click();
+      await menu.getByRole('link', { name: 'Dúvidas', exact: true }).click();
+      await expect(page).toHaveURL(ROUTES.duvidas);
+      await toggle.click();
+      await expect(menu).toHaveAttribute('open', '');
+      await page.goBack();
+      await expect(page).toHaveURL(ROUTES.home);
+      await expect(menu).not.toHaveAttribute('open', '');
+
+      await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-011-mobile-menu-closes.png') });
+    });
   });
 
   // TC-EDGE-003: perguntas frequentes abrem e fecham (<details> nativo)
@@ -269,5 +306,49 @@ test.describe('Unhappy Path & Edge Cases: site', () => {
       const response = await request.get(href);
       expect(response.status(), href).toBe(200);
     }
+  });
+  // TC-EDGE-012: envio com erro leva ao primeiro campo marcado (o botão Enviar fica no fim do formulário)
+  test('TC-EDGE-012: contact form focuses the first invalid field', async ({ page }) => {
+    const form = await openContactForm(page);
+    await form.getByRole('button', { name: 'Enviar' }).click();
+    const nome = form.getByLabel(/^Nome completo/);
+    await expect(nome).toBeFocused();
+    await expect(nome).toBeInViewport();
+
+    // Com os campos de texto válidos, o próximo erro é a primeira faixa (select)
+    await nome.fill('Mariana Costa');
+    await form.getByLabel(/^E-mail de trabalho/).fill('mariana@empresa.com.br');
+    await form.getByLabel(/^Celular com DDD/).fill('11912345678');
+    await form.getByLabel(/^Empresa/).fill('Aurora');
+    await form.getByLabel(/^Cargo/).fill('RH');
+    await form.getByRole('button', { name: 'Enviar' }).click();
+    const pessoas = form.getByLabel(/^Quantas pessoas vai premiar/);
+    await expect(pessoas).toBeFocused();
+    await expect(pessoas).toBeInViewport();
+
+    await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'TC-EDGE-012-form-focus-first-invalid.png') });
+  });
+
+  // TC-EDGE-013: números da home nunca ficam parados num valor de partida ("R$ 1 milhões")
+  test.describe('home numbers (1440x900)', () => {
+    test.use({ viewport: { width: 1440, height: 900 } });
+
+    test('TC-EDGE-013: numbers show final values outside the count-up', async ({ page }) => {
+      await page.goto(ROUTES.home, { waitUntil: 'networkidle' });
+      const values = page.locator('#numeros .ct');
+      // Seção só um pouco visível ao abrir: valores finais, sem contagem
+      await expect(values).toHaveText(['15', '40']);
+      await expect(page.locator('#numeros')).not.toHaveClass(/st-run/);
+
+      // Durante a contagem o valor em reais nunca fica abaixo de 2
+      const seen = new Set<string>();
+      await page.locator('#numeros').scrollIntoViewIfNeeded();
+      for (let i = 0; i < 30; i++) {
+        seen.add((await values.nth(1).textContent()) ?? '');
+        await page.waitForTimeout(100);
+      }
+      expect([...seen]).not.toContain('1');
+      await expect(values).toHaveText(['15', '40']);
+    });
   });
 });
